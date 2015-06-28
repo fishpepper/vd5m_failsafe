@@ -31,17 +31,16 @@
 #define VD5M_LED   (1<<0)
 #define VD5M_FLICKER_RATE 50
 
-//lets assume the led flickers with VD5M_FLICKER_RATE Hz
-//so lets see if we have activity within the last 1000/VD5M_FLICKER_RATE ms
-//we sample 16x within 2x this time
-#define SAMPLING_DELAY_MS ((double)((1000.0/VD5M_FLICKER_RATE)*2/16))
 //we want to time out after n ms of no activity
 #define NO_ACTIVITY_TIMEOUT_MS 1500
-#define NO_ACTIVITY_TIMEOUT_INITVALUE ((NO_ACTIVITY_TIMEOUT_MS)/(16*SAMPLING_DELAY_MS))
+//sampling delay
+#define SAMPLING_DELAY_US 100
+//how many samples of no change trigger a timeout?
+#define NO_ACTIVITY_TIMEOUT_INITVALUE ( NO_ACTIVITY_TIMEOUT_MS*1000L/SAMPLING_DELAY_US )
 
 int main(void) {
-	uint16_t status = 0;
-	uint8_t  state  = 0;
+	uint8_t  state_now = 0;
+	uint8_t  state_old = 0;
 	uint16_t no_activity_timeout = NO_ACTIVITY_TIMEOUT_INITVALUE;
 
 	WORK IN PROGRESS, UNTESTED ;)
@@ -56,26 +55,18 @@ int main(void) {
 	//do main loop
 	while(1){
 		//test if there was activity on the status led
-		_delay_ms(SAMPLING_DELAY_MS);
-		state++;
-
-		if (state < 16){
-			//shift in data:
-			status = (status<<1) | ((PINB & VD5M_LED)?1:0);
+		status_now = (PINB & VD5M_LED);
+		if (status_now != status_old){
+			//activity detected -> reset timeout
+                        no_activity_timeout = NO_ACTIVITY_TIMEOUT_INITVALUE;
+                        status_old = status_now;
 		}else{
-			//ok, sampling done, lets see if there was activity:
-			if ((status == 0x0000) || (status == 0xFFFF)){
-				//no activity, either always high or always low!
-				//decrease no activity counter:
-				no_activity_timeout--;
-			}else{
-				//activity! reset timeout:
-				no_activity_timeout = NO_ACTIVITY_TIMEOUT_INITVALUE;
-			}
-
-			//restart with sampling
-			state = 0;
+			//no activity, decrement timeout
+			no_activity_timeout--;
 		}
+
+		//sampling delay:
+		_delay_us(SAMPLING_DELAY_US);
 
 		//do we have a no-activity timeout?
 		if (no_activity_timeout == 0){
@@ -87,8 +78,6 @@ int main(void) {
 			//release reset 
 			PORTB |= VD5M_RESET;
 			//start all over again
-			state = 0;
-			status = 0;
    			no_activity_timeout = NO_ACTIVITY_TIMEOUT_INITVALUE;
 		}
 	}	
