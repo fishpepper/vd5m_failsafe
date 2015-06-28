@@ -33,12 +33,12 @@ not activity for 1.5s the attiny resets the VD5M.
 During reset state, before receiving any packets the VD5M does not output any
 PPM signals. This is detected as "no signal" by the cc3d and the motors are switched off.
 
-## CAUTION
+* CAUTION:
 this does not set/send any given configurable throttle position, this addon
 simply causes the VD5M to outpu _NO_ signal at all during connection loss for >1.5s.
 Be sure to test if your controler can cope with this (props off!).
 
-## CAUTION2
+* CAUTION2:
 Be aware that the Openpilot software 15.02 had a bug that could not 
 detect "no signal" on pwm receivers. Please use at least 15.05
 
