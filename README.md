@@ -15,11 +15,16 @@ Alternatively you can simply flash my compiled main.hex file.
 
 
 ```
-ATTINY pin 3 (PB1) ---> VD5M jtag header pin ? (reset)
-ATTINY pin 1 (PB0) ---> VD5M green led signal before resistor (todo: which R? add pic)
+ATTINY pin 1 (PB0) ---> VD5M jtag header pin ? (reset)
+ATTINY pin 3 (PB1) ---> VD5M green led signal before resistor (todo: which R? add pic)
 ATTINY pin 2 (GND) ---> VD5M jtag header pin ? (gnd)
 ATTINY pin 5 (VCC) ---> VD5M jtag header pin ? (3.3V)
+ATTINY pin 4 (PB2) ---> piezo buzzer (second pin to gnd) [optional, beeps on signal lost]
 ```
+
+# Programming
+
+NOTE: the tiny can only be programmed at VCC=5V ! program the device before mounting it on the vd5m.
 
 # how does it work?
 

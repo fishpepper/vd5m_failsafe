@@ -7,6 +7,7 @@
 AVRGCC_TOOLCHAIN=/usr/avr8-gnu-toolchain-linux_x86_64/
 
 MCU = attiny10
+#attiny10
 FORMAT = ihex
 TARGET = main
 SRC = main.c
@@ -84,8 +85,8 @@ LDFLAGS = $(EXTMEMOPTS) $(LDMAP) $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 
 # Programming support using avrdude. Settings and variables.
 
-AVRDUDE_PROGRAMMER = arduino
-AVRDUDE_PORT = /dev/ttyUSB0 -b57600
+AVRDUDE_PROGRAMMER = avrispmkii
+AVRDUDE_PORT = usb
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
@@ -106,7 +107,7 @@ AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_VERBOSE = -v -v
 
 AVRDUDE_BASIC = -p $(MCU) -P $(AVRDUDE_PORT) -c $(AVRDUDE_PROGRAMMER) 
-AVRDUDE_FLAGS = $(AVRDUDE_BASIC) $(AVRDUDE_NO_VERIFY) $(AVRDUDE_VERBOSE) $(AVRDUDE_ERASE_COUNTER) -E noreset,vcc
+AVRDUDE_FLAGS = $(AVRDUDE_BASIC) $(AVRDUDE_NO_VERIFY) $(AVRDUDE_VERBOSE) $(AVRDUDE_ERASE_COUNTER) 
 
 
 CC = $(AVRGCC_TOOLCHAIN)/bin/avr-gcc
@@ -145,6 +146,8 @@ sym: $(TARGET).sym
 # Program the device.  
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
+fuses: 
+	$(AVRDUDE) $(AVRDUDE_FLAGS) -U lfuse:w:0xe2:m -U hfuse:w:0xde:m -U efuse:w:0xFe:m
 
 fw.h: firmware.bin
 	bin2c fw < firmware.bin  > fw.h
