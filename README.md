@@ -22,6 +22,8 @@ ATTINY pin 5 (VCC) ---> VD5M jtag header pin ? (3.3V)
 ATTINY pin 4 (PB2) ---> piezo buzzer (second pin to gnd) [optional, beeps on signal lost]
 ```
 
+see doc/vd5m_failsafe.jpg for a way how to mount that thing. the two grey cables go to a piezo buzzer (buzzes on lost signal)
+
 # Programming
 
 NOTE: the tiny can only be programmed at VCC=5V ! program the device before mounting it on the vd5m.
